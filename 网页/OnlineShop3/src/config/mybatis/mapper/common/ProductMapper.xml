@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ischoolbar.programmer.dao.common.ProductDao">
+	<!-- 商品插入操作 -->
+	<insert id="add" parameterType="com.ischoolbar.programmer.entity.common.Product">
+		insert into product(id_tem,productCategoryId,name,tags,imageUrl,price,stock,sellNum,viewNum,commentNum,content,createTime) values(null,#{productCategoryId},#{name},#{tags},#{imageUrl},#{price},#{stock},#{sellNum},#{viewNum},#{commentNum},#{content},#{createTime})
+	</insert>
+	<!-- 商品更新操作 -->
+	<update id="edit" parameterType="com.ischoolbar.programmer.entity.common.Product">
+		update product set productCategoryId = #{productCategoryId},name = #{name},tags = #{tags},imageUrl = #{imageUrl},price = #{price},stock = #{stock},content = #{content} where id = #{id}
+	</update>
+	<!-- 商品统计数量更新 -->
+	<update id="updateNum" parameterType="com.ischoolbar.programmer.entity.common.Product">
+		update product set stock = #{stock},sellNum = #{sellNum},viewNum = #{viewNum},commentNum = #{commentNum} where id = #{id}
+	</update>
+	<!-- 商品信息搜索查询 -->
+	<select id="findList" parameterType="Map" resultType="com.ischoolbar.programmer.entity.common.Product">
+		select * from product where 1 = 1 
+		<if test="name != null">
+			and name like '%${name}%' 
+		</if>
+		<if test="tags != null">
+			and tags like '%${tags}%'  
+		</if>
+		<if test="priceMin != null">
+			and price &gt; #{priceMin}  
+		</if>
+		<if test="priceMax != null">
+			and price &lt; #{priceMax}  
+		</if>
+		<if test="orderBy != null and sort != null">
+			order by ${orderBy} ${sort}   
+		</if>
+		<if test="offset != null and pageSize != null">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<!-- 模糊搜索总条数 -->
+	<select id="getTotal" parameterType="Map" resultType="Integer">
+		select count(*) from product where 1 = 1 
+		<if test="name != null">
+			and name like '%${name}%' 
+		</if>
+		<if test="tags != null">
+			and tags in(${tags})  
+		</if>
+		<if test="priceMin != null">
+			and price &gt; #{priceMin}  
+		</if>
+		<if test="priceMax != null">
+			and price &lt; #{priceMax}  
+		</if>
+	</select>
+	<!-- 根据id查询 -->
+	<select id="findById" parameterType="Long" resultType="com.ischoolbar.programmer.entity.common.Product">
+		select * from product where id = #{value}
+	</select>
+	<!-- 删除商品信息 -->
+	<delete id="delete" parameterType="String">
+		delete from product where id in(${value})
+	</delete>
+	<!-- 获取全站top20 -->
+	<select id="findTop" parameterType="Map" resultType="com.ischoolbar.programmer.entity.common.Product">
+		select * from product left join (select score as my_score,bookid from top order by top.score desc) tab on tab.bookid = product.id order by tab.my_score desc limit 20;
+	</select>
+	<select id="findRec1" parameterType="Long" resultType="com.ischoolbar.programmer.entity.common.Product">
+		select * from product left join (select user_id, book_id,score from test1 where user_id= #{id} order by test1.score desc) tab1 on tab1.book_id = product.id order by tab1.score desc limit 8;
+	</select>
+	<select id="ffindRec2" parameterType="Long" resultType="com.ischoolbar.programmer.entity.common.Product">
+		select * from product left join (select user_id, book_id,score from test2 where user_id= #{id} order by test2.score desc) tab2 on tab2.book_id = product.id order by tab2.score desc limit 8;
+	</select>
+	<select id="findperRec" parameterType="Long" resultType="com.ischoolbar.programmer.entity.common.Product">
+		select * from product left join (select user_id, book_id,score from item_collaborative where user_id= #{accid} order by item_collaborative.score desc limit 8) tab2 on tab2.book_id = product.id order by tab2.score desc limit 8;
+	</select>
+	<select id="findbookRec" parameterType="Long" resultType="com.ischoolbar.programmer.entity.common.Product">
+		select * from product where name like (select div_result from word_div as wd where wd.id_tem= #{id_tem})
+	</select>
+</mapper>

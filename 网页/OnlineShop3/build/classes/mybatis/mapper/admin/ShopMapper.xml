@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ischoolbar.programmer.dao.admin.ShopDao">
+	<!-- 根据店铺名查找店铺 -->
+	<select id="findByShopname" parameterType="String" resultType="Shop">
+		select * from shop where shopname = #{shopname}
+	</select>
+	<!-- 添加 -->
+	<insert id="add" parameterType="Shop">
+		insert into shop(id,user_id,shopname,username,telephone,position) values(null,#{user_id},#{shopname},#{username},#{telephone},#{position})
+	</insert>
+	<!-- 修改店铺 -->
+	<update id="edit" parameterType="Shop">
+		update shop set shopname = #{shopname},username = #{username},user_id = #{user_id},telephone = #{telephone},position = #{position} where id = #{id}
+	</update>
+	<!-- 删除店铺 -->
+	<delete id="delete" parameterType="String">
+		delete from shop where id in(${value})
+	</delete>
+	<!-- 分页获取店铺列表 -->
+	<select id="findList" parameterType="Map" resultType="Shop">
+		select * from shop where 1 = 1 
+		<if test="user_id != null">
+			and user_id like '%${user_id}%' 
+		</if>
+		<if test="shopname != null">
+			and shopname like '%${shopname}%' 
+		</if>
+		<if test="username != null">
+			and username like '%${username}%' 
+		</if>
+		<if test="telephone != null">
+			and telephone like '%${telephone}%' 
+		</if>
+		<if test="username != null">
+			and position like '%${position}%' 
+		</if>
+		<if test="offset != null and pageSize != null">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<!-- 获取符合结果的总记录数 -->
+	<select id="getTotal" parameterType="Map" resultType="Integer">
+		select count(*) from shop where 1 = 1 
+		<if test="user_id != null">
+			and user_id like '%${user_id}%' 
+		</if>
+		<if test="shopname != null">
+			and shopname like '%${shopname}%' 
+		</if>
+		<if test="username != null">
+			and username like '%${username}%' 
+		</if>
+		<if test="telephone != null">
+			and telephone like '%${telephone}%' 
+		</if>
+		<if test="username != null">
+			and position like '%${position}%' 
+		</if>
+	</select>
+</mapper>
